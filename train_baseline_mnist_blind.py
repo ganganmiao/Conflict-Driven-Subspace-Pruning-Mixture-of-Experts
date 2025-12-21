@@ -17,57 +17,8 @@ from analysis.plot_loss import plot_classic_curves
 from models.model import GroupedQueryAttention, RMSNorm, precompute_freqs_cis
 
 
-def validate_baseline_blind(model):
-    """
-    Baseline 的盲测：不传 Task ID，看它乱成什么样。
-    """
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-
-    cfg = BaselineConfig()
-    device = next(model.parameters()).device
-    model.eval()
-
-    _, test_loader = get_mixed_task_loaders(batch_size=100)
-    routing_stats = np.zeros((cfg.num_tasks, cfg.num_experts))
-
-    print("\n=== Running Baseline Blind Test (Task ID = None) ===")
-
-    with torch.no_grad():
-        for images, real_task_ids, _ in tqdm(test_loader, desc="Baseline Blind"):
-            images = images.to(device)
-            real_task_ids = real_task_ids.to(device)
-            inputs = patchify_images(images, cfg.patch_size)
-
-            # [关键] 传入 None
-            logits, _, snapshot = model(inputs, task_id=None)
-
-            # 统计路由
-            topk_indices = snapshot['indices']
-            B, S, K = topk_indices.shape
-            flat_indices = topk_indices.view(-1).cpu().numpy()
-            expanded_real_tasks = real_task_ids.view(B, 1, 1).expand(B, S, K).contiguous().view(-1).cpu().numpy()
-
-            np.add.at(routing_stats, (expanded_real_tasks, flat_indices), 1)
-
-    # 绘图
-    row_sums = routing_stats.sum(axis=1, keepdims=True) + 1e-6
-    norm_stats = routing_stats / row_sums
-
-    plt.figure(figsize=(10, 6))
-    sns.heatmap(norm_stats, annot=True, fmt=".2f", cmap="Purples",  # 用紫色区分 Baseline
-                xticklabels=[f"E{i}" for i in range(cfg.num_experts)],
-                yticklabels=[f"Real T{i}" for i in range(cfg.num_tasks)])
-
-    plt.title("Baseline Blind Routing (No Task ID)\nExpected Result: Chaos or Mode Collapse")
-    plt.xlabel("Selected Expert")
-    plt.ylabel("Ground Truth Task")
-    plt.tight_layout()
-    plt.savefig("baseline_blind_routing.png")
-    print("Baseline blind heatmap saved to 'baseline_blind_routing.png'")
-
-
 # === 1. 标准 MoE 层 (无冲突，无共享基座) ===
+# 保持完全一致，逻辑支持 None 输入
 class StandardMoELayer(nn.Module):
     def __init__(self, d_model, num_experts, top_k, num_tasks, d_task_embed):
         super().__init__()
@@ -75,7 +26,7 @@ class StandardMoELayer(nn.Module):
         self.top_k = top_k
 
         # 标准 FFN 专家 (独立权重)
-        d_ffn = 32  # 为了对齐和cdsp的参数量的专家维度
+        d_ffn = 32  # 对齐 CDSP 参数量
         self.experts = nn.ModuleList([
             nn.Sequential(
                 nn.Linear(d_model, d_ffn),
@@ -90,9 +41,12 @@ class StandardMoELayer(nn.Module):
     def forward(self, x, task_id):
         batch_size, seq_len, _ = x.shape
         x_norm = F.layer_norm(x, x.shape[1:])
+
+        # === 核心逻辑：如果 task_id 为 None，生成全 0 向量 ===
         if task_id is not None:
             t_emb = self.task_embedding(task_id).unsqueeze(1).expand(-1, seq_len, -1)
         else:
+            # 模拟 DeepSeek/通用 MoE：没有 Task ID，只有 Content
             d_emb = self.task_embedding.embedding_dim
             t_emb = torch.zeros(batch_size, seq_len, d_emb, device=x.device)
 
@@ -125,7 +79,7 @@ class StandardMoELayer(nn.Module):
 
         usage_mean = expert_usage.mean() + 1e-6
         usage_std = expert_usage.std()
-        lb_loss = (usage_std / usage_mean) ** 2
+        lb_loss = (usage_std / usage_mean) ** 2  # 标准负载均衡损失
 
         return final_output, lb_loss, routing_snapshot
 
@@ -134,7 +88,7 @@ class StandardMoELayer(nn.Module):
 class BaselineBlock(nn.Module):
     def __init__(self, config):
         super().__init__()
-        # 1. Attention (确保公平对比)
+        # 1. Attention
         self.norm1 = RMSNorm(config.d_model)
         self.attention = GroupedQueryAttention(
             d_model=config.d_model,
@@ -204,23 +158,23 @@ class BaselineModel(nn.Module):
         return logits, total_aux_loss, snapshots[0]
 
 
-# === 4. 配置与训练 ===
-class BaselineConfig:
-    exp_name = "baseline_mnist_3task"
+# === 4. 配置  ===
+class BaselineBlindConfig:
+    exp_name = "baseline_mnist_3task_blind_train"
+
     epochs = 10
     batch_size = 64
     learning_rate = 0.005
     patch_size = 4
     input_dim = 16
 
-    # [Strictly Aligned with CDSP]
     d_model = 64
     num_experts = 8
     num_tasks = 3
     vocab_size = 10
-    n_layers = 2  # 2层
+    n_layers = 2
     moe_top_k = 2
-    n_heads = 4  # Attention 头数
+    n_heads = 4
     n_kv_heads = 2
     max_seq_len = 49
 
@@ -232,10 +186,65 @@ def patchify_images(images, patch_size=4):
     return patches
 
 
-def train_baseline():
-    cfg = BaselineConfig()
+# === 验证函数 ===
+def validate_final_blind(model, cfg):
+    """
+    验证函数：因为训练就是盲的，所以这里的逻辑其实和训练一样。
+    主要是为了画一张最终的高清热力图。
+    """
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    device = next(model.parameters()).device
+    model.eval()
+
+    _, test_loader = get_mixed_task_loaders(batch_size=100)
+    routing_stats = np.zeros((cfg.num_tasks, cfg.num_experts))
+
+    print("\n=== Verifying Final Blind Model Performance ===")
+
+    with torch.no_grad():
+        for images, real_task_ids, _ in tqdm(test_loader, desc="Final Eval"):
+            images = images.to(device)
+            real_task_ids = real_task_ids.to(device)
+            inputs = patchify_images(images, cfg.patch_size)
+
+            # [关键] 保持 None，虽然模型也没见过别的
+            logits, _, snapshot = model(inputs, task_id=None)
+
+            # 统计
+            topk_indices = snapshot['indices']
+            B, S, K = topk_indices.shape
+            flat_indices = topk_indices.view(-1).cpu().numpy()
+            expanded_real_tasks = real_task_ids.view(B, 1, 1).expand(B, S, K).contiguous().view(-1).cpu().numpy()
+
+            np.add.at(routing_stats, (expanded_real_tasks, flat_indices), 1)
+
+    # 绘图
+    row_sums = routing_stats.sum(axis=1, keepdims=True) + 1e-6
+    norm_stats = routing_stats / row_sums
+
+    plt.figure(figsize=(10, 6))
+    # 使用灰色/黑色系，表示这是"纯黑盒/盲盒"基线
+    sns.heatmap(norm_stats, annot=True, fmt=".2f", cmap="Greys",
+                xticklabels=[f"E{i}" for i in range(cfg.num_experts)],
+                yticklabels=[f"Real T{i}" for i in range(cfg.num_tasks)])
+
+    plt.title("Pure Blind Training Baseline (DeepSeek Style)\nInput: Content Only (No Task IDs)")
+    plt.xlabel("Selected Expert")
+    plt.ylabel("Ground Truth Task")
+    plt.tight_layout()
+
+    save_path = f"blind_train_result.png"
+    plt.savefig(save_path)
+    print(f"Final heatmap saved to '{save_path}'")
+
+
+# === 主训练循环 (加后缀) ===
+def train_baseline_blind():
+    cfg = BaselineBlindConfig()  # 使用新配置
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"=== Training Baseline MoE on {device} ===")
+    print(f"=== Training Pure Blind Baseline (Content-Only MoE) on {device} ===")
 
     train_loader, test_loader = get_mixed_task_loaders(batch_size=cfg.batch_size)
     model = BaselineModel(cfg).to(device)
@@ -257,16 +266,20 @@ def train_baseline():
             images, task_ids, labels = images.to(device), task_ids.to(device), labels.to(device)
             inputs = patchify_images(images, cfg.patch_size)
 
-            logits, aux_loss, snapshot = model(inputs, task_ids)
+            # ==========================================================
+            # [核心修改] 训练时直接传 None！
+            # 模仿 DeepSeek/Mixtral：Router 只能看 inputs (Content)，没有 ID 捷径
+            # ==========================================================
+            logits, aux_loss, snapshot = model(inputs, task_id=None)
 
-            # 统计路由
+            # 统计路由 (依然用真实的 task_ids 做 Ground Truth 统计，看它怎么分)
             with torch.no_grad():
                 B, S, K = snapshot['indices'].shape
                 flat_indices = snapshot['indices'].view(-1).cpu().numpy()
                 expanded_tasks = task_ids.view(B, 1, 1).expand(B, S, K).contiguous().view(-1).cpu().numpy()
                 np.add.at(epoch_routing_stats, (expanded_tasks, flat_indices), 1)
 
-            # 计算 Loss 和 Acc
+            # 计算 Loss (Acc 统计依然需要 mask)
             total_main_loss = 0
             correct = 0
             batch_size = images.size(0)
@@ -287,6 +300,7 @@ def train_baseline():
                 correct += t_correct
                 acc_breakdown[f"T{t_id}"] = t_correct / mask.sum().item()
 
+            # Loss = 主任务 + 负载均衡 (没有冲突 Loss)
             total_loss = total_main_loss + 0.01 * aux_loss
 
             optimizer.zero_grad()
@@ -306,7 +320,6 @@ def train_baseline():
                 'task_acc': correct / batch_size
             })
 
-            # 加回 T0/T1/T2 显示
             pbar.set_postfix({
                 'Loss': f"{total_loss.item():.4f}",
                 'Acc': f"{correct / batch_size:.2%}",
@@ -319,15 +332,18 @@ def train_baseline():
         avg_acc = epoch_acc / samples
         print(f"Epoch {epoch + 1} Summary: Loss={avg_loss:.4f}, Acc={avg_acc:.2%}")
 
+        # 保存快照 (注意：这里画的图就是真实的盲测路由)
         monitor.capture_snapshot(epoch, alpha_matrix=None, routing_stats=epoch_routing_stats)
-        monitor.plot_current_routing(step=epoch, filename=f"routing_epoch_{epoch}.png")
+        monitor.plot_current_routing(step=epoch, filename=f"routing_blind_epoch_{epoch}.png")
 
-    print("=== Baseline Training Finished ===")
+    print("=== Pure Blind Baseline Training Finished ===")
     plot_classic_curves(monitor.history, exp_name=cfg.exp_name)
-    monitor.plot_routing_evolution(filename="final_routing_evolution.png")
-    validate_baseline_blind(model)
+
+    # 最后跑一次详细验证
+    validate_final_blind(model, cfg)
+
     print(f"Results saved to: {monitor.save_dir}")
 
 
 if __name__ == "__main__":
-    train_baseline()
+    train_baseline_blind()

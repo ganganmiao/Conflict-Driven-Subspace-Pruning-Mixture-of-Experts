@@ -78,6 +78,9 @@ class CDSPMoELayer(nn.Module):
             # 广播到序列长度: [batch, 1, d_task_embed] -> [batch, seq, d_task_embed]
             task_feat = t_emb.unsqueeze(1).expand(-1, seq_len, -1)
 
+        if self.training and torch.rand(1).item() < 0.1:  # 10% 的概率dropout任务
+            task_feat = torch.zeros_like(task_feat)
+
         # 3. 状态融合 (State Fusion)
         # 将内容信息与意图信息在特征维度拼接
         router_input = torch.cat([x_norm, task_feat], dim=-1)  # [batch, seq, d_model + d_task]
@@ -108,10 +111,6 @@ class CDSPMoELayer(nn.Module):
 
         final_output = torch.zeros_like(flat_x)
         active_experts_set = set()
-
-        # [CRITICAL FIX]: 移除这里的 clear_gradient_buffer
-        # if self.training:
-        #     self.backbone.clear_gradient_buffer()  <-- 凶手就在这里，删掉它！
 
         # 3. 专家并行执行
         for k_idx in range(self.top_k):

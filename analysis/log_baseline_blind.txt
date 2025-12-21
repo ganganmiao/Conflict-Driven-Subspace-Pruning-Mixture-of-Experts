@@ -1,0 +1,33 @@
+D:\AI\conda\envs\pytorch-transformer\python.exe D:\AI\test\CDSP-MoE\train_baseline_mnist_blind.py 
+=== Training Pure Blind Baseline (Content-Only MoE) on cuda ===
+[SystemMonitor] Artifacts will be saved to: D:\AI\test\CDSP-MoE\analysis\pic\baseline_mnist_3task_blind_train
+Epoch 1/10: 100%|██████████| 2813/2813 [02:55<00:00, 16.04it/s, Loss=0.4390, Acc=84.38%, T0=75%, T1=100%, T2=83%]
+Epoch 1 Summary: Loss=0.7323, Acc=71.43%
+Epoch 2/10: 100%|██████████| 2813/2813 [02:56<00:00, 15.93it/s, Loss=0.3241, Acc=90.62%, T0=80%, T1=100%, T2=91%]
+Epoch 2 Summary: Loss=0.4236, Acc=84.05%
+Epoch 3/10: 100%|██████████| 2813/2813 [03:00<00:00, 15.63it/s, Loss=0.2263, Acc=93.75%, T0=100%, T1=90%, T2=88%]
+Epoch 3 Summary: Loss=0.3510, Acc=87.05%
+Epoch 4/10: 100%|██████████| 2813/2813 [02:52<00:00, 16.35it/s, Loss=0.1846, Acc=87.50%, T0=90%, T1=86%, T2=88%]
+Epoch 4 Summary: Loss=0.2633, Acc=90.43%
+Epoch 5/10: 100%|██████████| 2813/2813 [02:55<00:00, 16.07it/s, Loss=0.1393, Acc=96.88%, T0=91%, T1=100%, T2=100%]
+Epoch 5 Summary: Loss=0.2301, Acc=91.73%
+Epoch 6/10: 100%|██████████| 2813/2813 [02:53<00:00, 16.26it/s, Loss=0.2817, Acc=87.50%, T0=100%, T1=73%, T2=100%]
+Epoch 6 Summary: Loss=0.2169, Acc=92.22%
+Epoch 7/10: 100%|██████████| 2813/2813 [02:54<00:00, 16.10it/s, Loss=0.1824, Acc=96.88%, T0=100%, T1=91%, T2=100%]
+Epoch 7 Summary: Loss=0.1957, Acc=93.05%
+Epoch 8/10: 100%|██████████| 2813/2813 [03:01<00:00, 15.49it/s, Loss=0.1416, Acc=96.88%, T0=100%, T1=83%, T2=100%]
+Epoch 8 Summary: Loss=0.1843, Acc=93.42%
+Epoch 9/10: 100%|██████████| 2813/2813 [03:05<00:00, 15.19it/s, Loss=0.1908, Acc=96.88%, T0=94%, T1=100%, T2=100%]
+Epoch 9 Summary: Loss=0.1918, Acc=93.20%
+Epoch 10/10: 100%|██████████| 2813/2813 [02:58<00:00, 15.78it/s, Loss=0.1025, Acc=96.88%, T0=91%, T1=100%, T2=100%]
+Epoch 10 Summary: Loss=0.1722, Acc=93.92%
+=== Pure Blind Baseline Training Finished ===
+[Plotter] Loss curve saved to: D:\AI\test\CDSP-MoE\analysis\pic\baseline_mnist_3task_blind_train\loss_curve.png
+[Plotter] Metrics curve saved to: D:\AI\test\CDSP-MoE\analysis\pic\baseline_mnist_3task_blind_train\metrics_curve.png
+
+=== Verifying Final Blind Model Performance ===
+Final Eval: 100%|██████████| 300/300 [00:09<00:00, 32.32it/s]
+Final heatmap saved to 'blind_train_result.png'
+Results saved to: D:\AI\test\CDSP-MoE\analysis\pic\baseline_mnist_3task_blind_train
+
+进程已结束，退出代码为 0

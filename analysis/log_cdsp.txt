@@ -4,27 +4,33 @@ Experiment: cdsp_mnist_3task
 [Topology] Initialized Alpha: Diagonal=1.0, Off-diagonal~0.1
 [Topology] Initialized Alpha: Diagonal=1.0, Off-diagonal~0.1
 [SystemMonitor] Artifacts will be saved to: D:\AI\test\CDSP-MoE\analysis\pic\cdsp_mnist_3task
-Epoch 1/10: 100%|██████████| 2813/2813 [04:27<00:00, 10.53it/s, Loss=0.4353, Aux=6.064e-04, Acc=78.12%, T0=78%, T1=71%, T2=89%]
-Epoch 1 Summary: Loss=0.7020, Acc=72.72%
-Epoch 2/10: 100%|██████████| 2813/2813 [04:40<00:00, 10.03it/s, Loss=0.3531, Aux=6.250e-04, Acc=84.38%, T0=88%, T1=77%, T2=91%]
-Epoch 2 Summary: Loss=0.4204, Acc=83.42%
-Epoch 3/10: 100%|██████████| 2813/2813 [04:42<00:00,  9.96it/s, Loss=0.3734, Aux=6.355e-04, Acc=87.50%, T0=90%, T1=90%, T2=83%]
-Epoch 3 Summary: Loss=0.3018, Acc=88.44%
-Epoch 4/10: 100%|██████████| 2813/2813 [04:30<00:00, 10.38it/s, Loss=0.3527, Aux=6.385e-04, Acc=90.62%, T0=93%, T1=88%, T2=90%]
-Epoch 4 Summary: Loss=0.2461, Acc=90.60%
-Epoch 5/10: 100%|██████████| 2813/2813 [04:45<00:00,  9.86it/s, Loss=0.1792, Aux=6.401e-04, Acc=87.50%, T0=89%, T1=83%, T2=91%]
-Epoch 5 Summary: Loss=0.2181, Acc=91.82%
-Epoch 6/10: 100%|██████████| 2813/2813 [04:42<00:00,  9.97it/s, Loss=0.1724, Aux=6.425e-04, Acc=93.75%, T0=100%, T1=91%, T2=93%]
-Epoch 6 Summary: Loss=0.1990, Acc=92.67%
-Epoch 7/10: 100%|██████████| 2813/2813 [04:39<00:00, 10.05it/s, Loss=0.1887, Aux=6.455e-04, Acc=93.75%, T0=100%, T1=100%, T2=83%]
-Epoch 7 Summary: Loss=0.1848, Acc=93.18%
-Epoch 8/10: 100%|██████████| 2813/2813 [04:17<00:00, 10.92it/s, Loss=0.2293, Aux=6.442e-04, Acc=93.75%, T0=88%, T1=93%, T2=100%]
-Epoch 8 Summary: Loss=0.1813, Acc=93.26%
-Epoch 9/10: 100%|██████████| 2813/2813 [04:42<00:00,  9.97it/s, Loss=0.1427, Aux=6.453e-04, Acc=93.75%, T0=100%, T1=85%, T2=100%]
-Epoch 9 Summary: Loss=0.1709, Acc=93.73%
-Epoch 10/10: 100%|██████████| 2813/2813 [04:52<00:00,  9.63it/s, Loss=0.0531, Aux=6.378e-04, Acc=96.88%, T0=100%, T1=100%, T2=93%]
-Epoch 10 Summary: Loss=0.1628, Acc=94.05%
+Epoch 1/10: 100%|██████████| 2813/2813 [04:16<00:00, 10.98it/s, Loss=0.9115, Aux=5.945e-04, Acc=56.25%, T0=45%, T1=55%, T2=70%]
+Epoch 1 Summary: Loss=0.7434, Acc=71.14%
+Epoch 2/10: 100%|██████████| 2813/2813 [04:13<00:00, 11.10it/s, Loss=0.4630, Aux=7.350e-04, Acc=90.62%, T0=77%, T1=100%, T2=100%]
+Epoch 2 Summary: Loss=0.4517, Acc=81.85%
+Epoch 3/10: 100%|██████████| 2813/2813 [04:16<00:00, 10.96it/s, Loss=0.3750, Aux=6.049e-04, Acc=84.38%, T0=100%, T1=62%, T2=86%]
+Epoch 3 Summary: Loss=0.3272, Acc=86.94%
+Epoch 4/10: 100%|██████████| 2813/2813 [04:20<00:00, 10.79it/s, Loss=0.0821, Aux=6.124e-04, Acc=96.88%, T0=100%, T1=92%, T2=100%]
+Epoch 4 Summary: Loss=0.2516, Acc=90.17%
+Epoch 5/10: 100%|██████████| 2813/2813 [04:23<00:00, 10.67it/s, Loss=0.0396, Aux=6.166e-04, Acc=100.00%, T0=100%, T1=100%, T2=100%]
+Epoch 5 Summary: Loss=0.2143, Acc=91.80%
+Epoch 6/10: 100%|██████████| 2813/2813 [04:29<00:00, 10.46it/s, Loss=0.1067, Aux=6.153e-04, Acc=93.75%, T0=100%, T1=90%, T2=89%]
+Epoch 6 Summary: Loss=0.1911, Acc=92.81%
+Epoch 7/10: 100%|██████████| 2813/2813 [04:20<00:00, 10.81it/s, Loss=0.1507, Aux=6.200e-04, Acc=96.88%, T0=92%, T1=100%, T2=100%]
+Epoch 7 Summary: Loss=0.1780, Acc=93.32%
+Epoch 8/10: 100%|██████████| 2813/2813 [04:21<00:00, 10.75it/s, Loss=0.0675, Aux=6.186e-04, Acc=96.88%, T0=91%, T1=100%, T2=100%]
+Epoch 8 Summary: Loss=0.1657, Acc=93.77%
+Epoch 9/10: 100%|██████████| 2813/2813 [04:35<00:00, 10.23it/s, Loss=0.2688, Aux=6.139e-04, Acc=93.75%, T0=100%, T1=100%, T2=78%]
+Epoch 9 Summary: Loss=0.1571, Acc=94.15%
+Epoch 10/10: 100%|██████████| 2813/2813 [04:13<00:00, 11.10it/s, Loss=0.1304, Aux=6.132e-04, Acc=93.75%, T0=92%, T1=92%, T2=100%]
+Epoch 10 Summary: Loss=0.1512, Acc=94.42%
 === Training Finished. Generating Final Reports... ===
+
+=== Running Deceptive Validation (Memory Model, Forcing Task ID = None) ===
+Deceptive Testing: 100%|██████████| 300/300 [00:11<00:00, 26.65it/s]
+Heatmap saved to deceptive_routing_forced_id_None.png
+
+[SUCCESS] Content-based routing detected! Task 0 and Task 1 both chose Expert 5.
 [Plotter] Loss curve saved to: D:\AI\test\CDSP-MoE\analysis\pic\cdsp_mnist_3task\loss_curve.png
 [Plotter] Metrics curve saved to: D:\AI\test\CDSP-MoE\analysis\pic\cdsp_mnist_3task\metrics_curve.png
 Results saved to: D:\AI\test\CDSP-MoE\analysis\pic\cdsp_mnist_3task

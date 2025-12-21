@@ -1,4 +1,5 @@
 import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 import torch
 import numpy as np
@@ -64,11 +65,14 @@ class SystemMonitor:
         N = matrix.shape[0]
 
         plt.figure(figsize=(10, 8))
-        ax = sns.heatmap(matrix, cmap="vlag", center=0.5, cbar=True, square=True,
-                         vmin=0.0, vmax=1.0,  # 固定范围 0~1
-                         annot=True, fmt=".2f", annot_kws={"size": 8},
-                         xticklabels=[f"E{i}" for i in range(N)],
-                         yticklabels=[f"E{i}" for i in range(N)])
+        ax = sns.heatmap(matrix,
+                         annot=True,
+                         fmt=".2f",
+                         cmap="Reds",
+                         vmin=0.0,
+                         vmax=1.0,
+                         xticklabels=[f"E{i}" for i in range(len(matrix))],
+                         yticklabels=[f"E{i}" for i in range(len(matrix))])
 
         ax.set_title(f"Expert-to-Expert Political Alliances (Prob) at Epoch {step}")
         ax.set_xlabel("Source Expert (Resource Provider)")

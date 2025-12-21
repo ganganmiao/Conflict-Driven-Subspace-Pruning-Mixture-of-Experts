@@ -16,6 +16,82 @@ from analysis.visualizer import SystemMonitor
 from analysis.plot_loss import plot_classic_curves
 
 
+def validate_with_forced_id(model, forced_id=None):
+    """
+    接收已经训练好的 model 对象，进行"指鹿为马"测试。
+    """
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    # 获取配置 (假设 model.config 存在，或者直接实例化一个新的)
+    # 为了保险，我们直接实例化 ExperimentConfig，因为它是全局可见的
+    cfg = ExperimentConfig()
+    device = next(model.parameters()).device  # 获取模型所在的 device
+
+    print(f"\n=== Running Deceptive Validation (Memory Model, Forcing Task ID = {forced_id}) ===")
+
+    model.eval()  # 别忘了开评估模式！
+
+    # 获取测试数据
+    _, test_loader = get_mixed_task_loaders(batch_size=100)
+
+    # 初始化统计矩阵
+    routing_stats = np.zeros((cfg.num_tasks, cfg.num_experts))
+
+    with torch.no_grad():
+        for images, real_task_ids, _ in tqdm(test_loader, desc="Deceptive Testing"):
+            images = images.to(device)
+            real_task_ids = real_task_ids.to(device)
+
+            # 制造谎言：告诉 Router 所有任务都是 forced_id
+            if forced_id is not None:
+                # 如果是整数 (比如 0)，构造全是 0 的 Tensor
+                fake_task_ids = torch.full_like(real_task_ids, fill_value=forced_id)
+            else:
+                # 如果是 None，直接传 None
+                fake_task_ids = None
+
+            inputs = patchify_images(images, cfg.patch_size)
+
+            # 传入假的 ID
+            logits, _, snapshot = model(inputs, fake_task_ids)
+
+            # --- 统计逻辑 (和之前一样) ---
+            topk_indices = snapshot['indices']
+            B, S, K = topk_indices.shape
+            flat_indices = topk_indices.view(-1).cpu().numpy()
+            expanded_real_tasks = real_task_ids.view(B, 1, 1).expand(B, S, K).contiguous().view(-1).cpu().numpy()
+
+            np.add.at(routing_stats, (expanded_real_tasks, flat_indices), 1)
+
+    # 归一化并绘图
+    row_sums = routing_stats.sum(axis=1, keepdims=True) + 1e-6
+    norm_stats = routing_stats / row_sums
+
+    plt.figure(figsize=(10, 6))
+    sns.heatmap(norm_stats, annot=True, fmt=".2f", cmap="Blues",
+                xticklabels=[f"Expert {i}" for i in range(cfg.num_experts)],
+                yticklabels=[f"Real Task {i}" for i in range(cfg.num_tasks)])
+
+    plt.title(f"Deceptive Routing (Forced ID {forced_id})\nVerify: Does Task 1 follow Task 0?")
+    plt.xlabel("Selected Expert")
+    plt.ylabel("Ground Truth Task")
+    plt.tight_layout()
+
+    filename = f"deceptive_routing_forced_id_{forced_id}.png"
+    plt.savefig(filename)
+    print(f"Heatmap saved to {filename}")
+    # plt.show() # 如果在服务器上跑，可以注释掉这行
+
+    # 简单分析
+    expert_preferences = np.argmax(norm_stats, axis=1)
+    if expert_preferences[0] == expert_preferences[1]:
+        print(
+            f"\n[SUCCESS] Content-based routing detected! Task 0 and Task 1 both chose Expert {expert_preferences[0]}.")
+    else:
+        print(
+            f"\n[FAIL] ID-based bias detected. Task 0 -> E{expert_preferences[0]}, Task 1 -> E{expert_preferences[1]}.")
+
 # === 配置类 (内部定义) ===
 class ExperimentConfig:
     exp_name = "cdsp_mnist_3task"
@@ -172,8 +248,6 @@ def train_cdsp():
                 correct += t_correct
                 acc_breakdown[f"T{t_id}"] = t_correct / mask.sum().item()
 
-            # 演化动力学 Loss (Conflict * 10.0 + L1)
-            # Conflict Weight 保持 10.0
             conflict_weight = 10.0
             total_loss = total_main_loss + conflict_weight * aux_loss
 
@@ -228,6 +302,7 @@ def train_cdsp():
 
     # 5. 训练结束分析
     print("=== Training Finished. Generating Final Reports... ===")
+    validate_with_forced_id(model, forced_id=None)
 
     # 生成最终演化图
     monitor.plot_topology_evolution(filename="final_alpha_evolution.png")

@@ -1,4 +1,5 @@
 import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 import torch
 import torch.nn as nn
@@ -6,10 +7,11 @@ from utils.sparse_ops import compute_sparse_aligned_cosine
 
 
 class GradientConflictEngine(nn.Module):
-    def __init__(self, topology_layer, backbone_layer):
+    def __init__(self, topology_layer, backbone_layer, synergy_weight=0.5):
         super().__init__()
         self.topology = topology_layer
         self.backbone = backbone_layer
+        self.synergy_weight = synergy_weight
 
     def forward(self, active_experts: list) -> torch.Tensor:
         """
@@ -21,6 +23,7 @@ class GradientConflictEngine(nn.Module):
             return torch.tensor(0.0, device=self.topology.alpha.device)
 
         conflict_loss = 0.0
+        synergy_reward = 0.0
         overlap_count_log = 0  # 仅用于调试或监控
 
         # 遍历专家对
@@ -64,5 +67,9 @@ class GradientConflictEngine(nn.Module):
                 # 物理意义：如果我对你依赖很重 (Alpha高)，且我们在重叠区域打架 (Conflict高)，
                 # 那么必须通过梯度下降减小 Alpha，即"断交"。
                 conflict_loss += connection_strength * conflict_magnitude
+
+                # 同理如果梯度相同鼓励连接
+                synergy_magnitude = torch.relu(cosine)
+                synergy_reward += connection_strength * synergy_magnitude
 
         return conflict_loss
