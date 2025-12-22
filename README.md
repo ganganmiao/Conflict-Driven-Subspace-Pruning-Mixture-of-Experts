@@ -97,10 +97,12 @@ $$
     根据控制力 $\mathbf{I}_i$ 选取 Top-$r$ 个物理维度索引 $\mathcal{S}_i$ (秩配额 $r$)。
     * **注**: 采用 **平方根缩放 (Square Root Scaling)** 以维持稀疏度平衡。
     * **公式**:
-      $$
-      r = \lfloor \frac{D_{base}}{\sqrt{N}} \rfloor
-      $$
-    * **代码对应**: `topology.py` -> `get_subspace_indices`。
+
+$$
+r = \lfloor \frac{D_{base}}{\sqrt{N}} \rfloor
+$$
+
+* **代码对应**: `topology.py` -> `get_subspace_indices`。
 
 2. **稀疏计算 (Sparse Computation)**:
     仅提取 $\mathcal{S}_i$ 对应的参数切片进行矩阵乘法。
