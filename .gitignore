@@ -1,9 +1,7 @@
-# Python 缓存
 __pycache__/
 *.py[cod]
 *$py.class
 
-# 虚拟环境 (如果有)
 venv/
 env/
 .env
@@ -12,7 +10,6 @@ env/
 .idea/
 .vscode/
 
-data/
 MNIST/
 KMNIST/
 FashionMNIST/
