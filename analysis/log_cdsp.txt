@@ -3,34 +3,34 @@ D:\AI\conda\envs\pytorch-transformer\python.exe D:\AI\test\CDSP-MoE\train_cdsp_m
 Experiment: cdsp_mnist_3task
 [Topology] Initialized Alpha: Diagonal=1.0, Off-diagonal~0.1
 [Topology] Initialized Alpha: Diagonal=1.0, Off-diagonal~0.1
-[SystemMonitor] Artifacts will be saved to: D:\AI\test\CDSP-MoE\analysis\pic\cdsp_mnist_3task
-Epoch 1/10: 100%|██████████| 2813/2813 [04:16<00:00, 10.98it/s, Loss=0.9115, Aux=5.945e-04, Acc=56.25%, T0=45%, T1=55%, T2=70%]
-Epoch 1 Summary: Loss=0.7434, Acc=71.14%
-Epoch 2/10: 100%|██████████| 2813/2813 [04:13<00:00, 11.10it/s, Loss=0.4630, Aux=7.350e-04, Acc=90.62%, T0=77%, T1=100%, T2=100%]
-Epoch 2 Summary: Loss=0.4517, Acc=81.85%
-Epoch 3/10: 100%|██████████| 2813/2813 [04:16<00:00, 10.96it/s, Loss=0.3750, Aux=6.049e-04, Acc=84.38%, T0=100%, T1=62%, T2=86%]
-Epoch 3 Summary: Loss=0.3272, Acc=86.94%
-Epoch 4/10: 100%|██████████| 2813/2813 [04:20<00:00, 10.79it/s, Loss=0.0821, Aux=6.124e-04, Acc=96.88%, T0=100%, T1=92%, T2=100%]
-Epoch 4 Summary: Loss=0.2516, Acc=90.17%
-Epoch 5/10: 100%|██████████| 2813/2813 [04:23<00:00, 10.67it/s, Loss=0.0396, Aux=6.166e-04, Acc=100.00%, T0=100%, T1=100%, T2=100%]
-Epoch 5 Summary: Loss=0.2143, Acc=91.80%
-Epoch 6/10: 100%|██████████| 2813/2813 [04:29<00:00, 10.46it/s, Loss=0.1067, Aux=6.153e-04, Acc=93.75%, T0=100%, T1=90%, T2=89%]
-Epoch 6 Summary: Loss=0.1911, Acc=92.81%
-Epoch 7/10: 100%|██████████| 2813/2813 [04:20<00:00, 10.81it/s, Loss=0.1507, Aux=6.200e-04, Acc=96.88%, T0=92%, T1=100%, T2=100%]
-Epoch 7 Summary: Loss=0.1780, Acc=93.32%
-Epoch 8/10: 100%|██████████| 2813/2813 [04:21<00:00, 10.75it/s, Loss=0.0675, Aux=6.186e-04, Acc=96.88%, T0=91%, T1=100%, T2=100%]
-Epoch 8 Summary: Loss=0.1657, Acc=93.77%
-Epoch 9/10: 100%|██████████| 2813/2813 [04:35<00:00, 10.23it/s, Loss=0.2688, Aux=6.139e-04, Acc=93.75%, T0=100%, T1=100%, T2=78%]
-Epoch 9 Summary: Loss=0.1571, Acc=94.15%
-Epoch 10/10: 100%|██████████| 2813/2813 [04:13<00:00, 11.10it/s, Loss=0.1304, Aux=6.132e-04, Acc=93.75%, T0=92%, T1=92%, T2=100%]
-Epoch 10 Summary: Loss=0.1512, Acc=94.42%
+Epoch 1/10:   0%|          | 0/2813 [00:00<?, ?it/s][SystemMonitor] Artifacts will be saved to: D:\AI\test\CDSP-MoE\analysis\pic\cdsp_mnist_3task
+Epoch 1/10: 100%|██████████| 2813/2813 [04:01<00:00, 11.65it/s, Loss=0.5630, Aux=5.970e-04, Acc=84.38%, T0=88%, T1=73%, T2=100%]
+Epoch 1 Summary: Loss=0.7169, Acc=71.84%
+Epoch 2/10: 100%|██████████| 2813/2813 [04:38<00:00, 10.11it/s, Loss=0.4555, Aux=6.031e-04, Acc=78.12%, T0=75%, T1=75%, T2=83%]
+Epoch 2 Summary: Loss=0.3761, Acc=85.00%
+Epoch 3/10: 100%|██████████| 2813/2813 [04:23<00:00, 10.68it/s, Loss=0.1263, Aux=6.085e-04, Acc=93.75%, T0=100%, T1=90%, T2=91%]
+Epoch 3 Summary: Loss=0.2645, Acc=89.72%
+Epoch 4/10: 100%|██████████| 2813/2813 [04:02<00:00, 11.60it/s, Loss=0.0676, Aux=6.179e-04, Acc=100.00%, T0=100%, T1=100%, T2=100%]
+Epoch 4 Summary: Loss=0.2174, Acc=91.74%
+Epoch 5/10: 100%|██████████| 2813/2813 [04:10<00:00, 11.24it/s, Loss=0.1400, Aux=6.169e-04, Acc=90.62%, T0=100%, T1=77%, T2=100%]
+Epoch 5 Summary: Loss=0.1922, Acc=92.77%
+Epoch 6/10: 100%|██████████| 2813/2813 [04:11<00:00, 11.18it/s, Loss=0.1780, Aux=6.147e-04, Acc=96.88%, T0=92%, T1=100%, T2=100%]
+Epoch 6 Summary: Loss=0.1764, Acc=93.35%
+Epoch 7/10: 100%|██████████| 2813/2813 [04:03<00:00, 11.56it/s, Loss=0.0987, Aux=6.209e-04, Acc=96.88%, T0=100%, T1=100%, T2=90%]
+Epoch 7 Summary: Loss=0.1678, Acc=93.79%
+Epoch 8/10: 100%|██████████| 2813/2813 [03:51<00:00, 12.13it/s, Loss=0.2026, Aux=6.065e-03, Acc=93.75%, T0=92%, T1=90%, T2=100%]
+Epoch 8 Summary: Loss=0.1575, Acc=94.15%
+Epoch 9/10: 100%|██████████| 2813/2813 [03:53<00:00, 12.04it/s, Loss=0.1594, Aux=6.160e-04, Acc=90.62%, T0=100%, T1=100%, T2=81%]
+Epoch 9 Summary: Loss=0.1541, Acc=94.28%
+Epoch 10/10: 100%|██████████| 2813/2813 [03:49<00:00, 12.24it/s, Loss=0.1148, Aux=6.120e-04, Acc=96.88%, T0=100%, T1=100%, T2=94%]
+Epoch 10 Summary: Loss=0.1469, Acc=94.54%
 === Training Finished. Generating Final Reports... ===
 
 === Running Deceptive Validation (Memory Model, Forcing Task ID = None) ===
-Deceptive Testing: 100%|██████████| 300/300 [00:11<00:00, 26.65it/s]
+Deceptive Testing: 100%|██████████| 300/300 [00:11<00:00, 27.27it/s]
 Heatmap saved to deceptive_routing_forced_id_None.png
 
-[SUCCESS] Content-based routing detected! Task 0 and Task 1 both chose Expert 5.
+[FAIL] ID-based bias detected. Task 0 -> E3, Task 1 -> E6.
 [Plotter] Loss curve saved to: D:\AI\test\CDSP-MoE\analysis\pic\cdsp_mnist_3task\loss_curve.png
 [Plotter] Metrics curve saved to: D:\AI\test\CDSP-MoE\analysis\pic\cdsp_mnist_3task\metrics_curve.png
 Results saved to: D:\AI\test\CDSP-MoE\analysis\pic\cdsp_mnist_3task
